@@ -1,202 +1,186 @@
-# 🕹️ BREAKOUT NEON
+\# 🕹️ BREAKOUT NEON
 
-Juego tipo *Breakout* en **Godot 4** conectado a una **base de datos SQLite**, con
-**clasificación (leaderboard)** y una **interfaz web local** para consultar todo lo
-que hace el jugador.
 
-> **Práctica 4 — Conexión a una base de datos**
-> Alumno: *José Luis David Bonilla Carranza*
 
----
+Juego tipo Breakout en Godot 4 con mejoras de Game Feel / Juice, conectado a una base de datos SQLite, con clasificación (leaderboard) y una interfaz web local para consultar el rendimiento del jugador.
 
-## 🎯 Qué hace el proyecto
 
-| Requisito de la práctica | Cómo se cumple |
+
+> \*\*Prácticas 4 y 5 — Base de Datos, Game Feel y Juice\*\*  
+
+> Profesor: \*José Luis David Bonilla Carranza\*
+
+
+
+\---
+
+
+
+\## 🎯 Qué hace el proyecto
+
+
+
+| Requisito | Cómo se cumple |
+
 |---|---|
-| **Conectar el juego con una base de datos** | El juego (Godot) envía cada partida y cada evento del jugador por **HTTP + JSON** a un servidor local en Python, que los guarda en una base de datos **SQLite** (`servidor/ranking.db`). |
-| **Guardar todo lo que hace el jugador** | Tabla `partidas` con el resultado completo (puntos, nivel, racha, ladrillos, coleccionables, vidas, modo, **duración/tiempo**, skins) y tabla `eventos` con el detalle momento a momento (nivel iniciado/superado, power-up recogido, ladrillo especial, bola perdida, pausa…). |
-| **Crear un leaderboard** | Pantalla **RÉCORDS** dentro del juego (lee del servidor) y pestaña **Clasificación** en la web. |
-| **Interfaz para consultar la información en un sistema web local** | Panel web servido en `http://127.0.0.1:8000` con 5 pestañas: Clasificación, Jugadores, Partidas, Actividad y Estadísticas. |
 
----
+| \*\*Game Feel y Juice\*\* | Input buffering (0.15s), Coyote time en la paleta (16px Y / 18px X), screenshake dinámico por eventos y feedback audiovisual completo (squash \& stretch, textos flotantes, partículas y sonido procedural). |
 
-## 🚀 Cómo se arranca
+| \*\*Conectar con base de datos\*\* | El juego envía cada partida y evento por HTTP + JSON a un servidor local en Python, que los almacena en SQLite (servidor/ranking.db). |
 
-### 1. El servidor (necesario para guardar datos)
+| \*\*Registro de actividad\*\* | Tabla partidas con resultados acumulados (puntos, nivel, racha, tiempo, skins) y tabla eventos con bitácora en tiempo real. |
 
-```bash
+| \*\*Leaderboard integrado\*\* | Pantalla RÉCORDS en el juego y pestaña Clasificación en la interfaz web. |
+
+| \*\*Interfaz web local\*\* | Panel servido en http://127.0.0.1:8000 con pestañas de Clasificación, Jugadores, Partidas, Actividad y Estadísticas. |
+
+
+
+\---
+
+
+
+\## ✨ Práctica 5: Game Feel y Juice
+
+
+
+Se implementaron y calibraron técnicas de respuesta táctil y retroalimentación para maximizar la satisfacción del jugador:
+
+
+
+1\. \*\*Input Buffering (0.15 s):\*\*
+
+&#x20;  - Registra de forma anticipada la pulsación de la tecla de lanzamiento (ESPACIO). Si el jugador presiona durante una transición de nivel o reinicio de bola, el juego retiene la acción y la ejecuta inmediatamente en cuanto entra en estado READY.
+
+2\. \*\*Coyote Time (16 px en Y / 18 px en X):\*\*
+
+&#x20;  - Ventana de tolerancia física en los bordes de la paleta. Si la pelota supera levemente la altura de impacto mientras va cayendo, el sistema valida un rebote límite si la paleta la alcanza en esa fracción de segundo, activando el aviso ¡RESCATE LÍMITE!.
+
+3\. \*\*Screenshake Dinámico:\*\*
+
+&#x20;  - Detonación de bloques bomba / habilidades de área: Amplitud 12.0 - 14.0, duración 0.40 s.
+
+&#x20;  - Pérdida de bola / impacto de daño: Amplitud 9.0, duración 0.35 s.
+
+&#x20;  - Hitos de combo (cada 5 impactos consecutivos): Micro-sacudida de amplitud 3.5, duración 0.15 s.
+
+4\. \*\*Feedback Audiovisual (Juice):\*\*
+
+&#x20;  - Animación elástica de compresión y estiramiento (squash \& stretch) en la paleta tras cada rebote.
+
+&#x20;  - Textos flotantes dinámicos (popup) con desvanecimiento para combos, puntajes y estados especiales.
+
+&#x20;  - Partículas explosivas mediante CPUParticles2D con gravedad y dispersión angular al fracturar bloques.
+
+&#x20;  - Efectos sonoros completamente procedurales sintetizados en tiempo real por software (AudioStreamWAV), con modulación aleatoria de tono (pitch).
+
+
+
+\---
+
+
+
+\## 🚀 Cómo se arranca
+
+
+
+\### 1. El servidor (necesario para guardar datos)
+
+
+
+Comando en terminal:
+
 cd servidor
+
 python servidor.py
-```
 
-No hay que instalar **nada**: usa solo la librería estándar de Python 3.8+.
-Al arrancar crea la base de datos `servidor/ranking.db` si no existe.
 
-### 2. El juego
 
-Abre el proyecto con **Godot 4** y pulsa **F5** (la escena principal es
-`scenes/menu.tscn`). Jugar una partida y, al terminar, escribir el nombre:
-la partida se guarda en la base de datos.
+No requiere librerías externas: funciona con la librería estándar de Python 3.8+. Al iniciar crea automáticamente la base de datos servidor/ranking.db si no existe.
 
-> Si el servidor está apagado el juego funciona igual: los resultados se
-> guardan en `user://envios_pendientes.json` y se envían solos la próxima vez.
 
-### 3. La interfaz web
 
-Con el servidor corriendo, abre en el navegador:
+\### 2. El juego
 
-```
+
+
+Abre el proyecto con Godot 4 y presiona F5 (la escena principal es scenes/menu.tscn).
+
+
+
+Si el servidor está apagado el juego funciona con normalidad: los resultados se almacenan en user://envios\_pendientes.json y se sincronizan solos al reanudar la conexión.
+
+
+
+\### 3. La interfaz web
+
+
+
+Con el servidor corriendo, entra desde tu navegador a:
+
 http://127.0.0.1:8000
-```
 
-También puedes verlo desde el móvil (misma red WiFi) usando la IP de tu PC,
-por ejemplo `http://192.168.1.50:8000`.
 
----
 
-## 🧱 Arquitectura
+\---
 
-```
-┌──────────────────┐   HTTP + JSON   ┌────────────────────┐   SQL   ┌──────────────┐
-│  GODOT (el juego)│ ──────────────► │  servidor.py       │ ──────► │  SQLite      │
-│  autoload        │                 │  API REST +        │         │  ranking.db  │
-│  "Leaderboard"   │ ◄────────────── │  sirve la web      │ ◄────── └──────────────┘
-└──────────────────┘   clasificación └─────────┬──────────┘
-                                               │ HTML/CSS/JS
-                                               ▼
-                                     ┌────────────────────┐
-                                     │ navegador          │
-                                     │ localhost:8000     │
-                                     └────────────────────┘
-```
 
-El juego **nunca** toca la base de datos directamente: habla con el servidor.
-Así la web y el juego leen y escriben lo mismo sin pelearse por el archivo.
 
----
+\## 🗂️ Estructura del proyecto
 
-## 🗂️ Estructura del proyecto
 
-```
-├── project.godot
-├── scenes/
-│   ├── menu.tscn          # portada: JUGAR, MODO INFINITO, NIVELES, ARMARIO, RÉCORDS
-│   ├── main.tscn          # la partida (incluye el panel de nombre al terminar)
-│   └── ...
-├── scripts/
-│   ├── leaderboard.gd     # ★ autoload: cliente HTTP de la base de datos
-│   ├── main.gd            # ★ registra eventos y envía la partida
-│   ├── menu.gd            # ★ pantalla RÉCORDS (lee del servidor)
-│   ├── game_data.gd       # progreso local + nombre del jugador
-│   └── ...
-└── servidor/
-    ├── servidor.py        # ★ API REST + base de datos + sirve la web
-    ├── ranking.db         # base de datos SQLite (se crea sola)
-    └── web/
-        ├── index.html     # ★ interfaz web
-        └── static/
-            ├── style.css
-            └── app.js
-```
 
----
+\- project.godot
 
-## 🗄️ Base de datos
+\- scenes/
 
-Dos tablas en `ranking.db`:
+&#x20; - menu.tscn (Portada: JUGAR, MODO INFINITO, ARMARIO, RÉCORDS)
 
-**`partidas`** — una fila por partida terminada
+&#x20; - main.tscn (Partida y juego principal)
 
-| Columna | Significado |
-|---|---|
-| `jugador` | Nombre que escribe el jugador al terminar |
-| `puntos` | Puntuación final |
-| `nivel` | Nivel máximo alcanzado |
-| `racha` | Mejor racha (ladrillos seguidos) |
-| `ladrillos` | Ladrillos rotos |
-| `powerups` | **Coleccionables** recogidos |
-| `vidas` | Vidas restantes |
-| `modo` | `normal` o `infinito` |
-| `duracion_s` | **Tiempo** jugado (segundos) |
-| `skin_bola`, `skin_pala` | Skins equipadas |
-| `sesion` | Identificador de la partida (sirve para atribuir los eventos) |
-| `fecha` | Fecha y hora local |
+&#x20; - ball.tscn (Bola con físicas y coyote time)
 
-**`eventos`** — el registro de lo que hace el jugador
+&#x20; - paddle.tscn (Paleta reactiva con deformación)
 
-| Columna | Significado |
-|---|---|
-| `tipo` | `nivel_iniciado`, `nivel_superado`, `powerup`, `brick_especial`, `bola_perdida`, `multibola`, `escudo`, `pausa`, `juego_terminado`, `juego_completado`, `skin_equipada` |
-| `detalle` | Texto libre (por ejemplo el power-up concreto) |
-| `valor` | Número asociado (puntos, segundos, vidas…) |
-| `nivel` | Nivel en el que ocurrió |
+\- scripts/
 
----
+&#x20; - ball.gd (Físicas, skins y rescate límite)
 
-## 🔌 API REST
+&#x20; - paddle.gd (Movimiento, amortiguación y squash)
 
-| Método | Ruta | Qué hace |
-|---|---|---|
-| `POST` | `/api/partidas` | Guarda una partida. Devuelve el **puesto** en la clasificación |
-| `POST` | `/api/eventos` | Guarda uno o varios eventos (acepta lista) |
-| `GET` | `/api/ranking?limite=10&modo=` | Mejor puntuación de cada jugador |
-| `GET` | `/api/jugadores` | Todos los jugadores con sus totales |
-| `GET` | `/api/jugadores/<nombre>` | Ficha completa de un jugador |
-| `GET` | `/api/partidas?limite=50&jugador=&modo=` | Partidas guardadas |
-| `GET` | `/api/eventos?limite=100&jugador=&tipo=` | Actividad registrada |
-| `GET` | `/api/estadisticas` | Totales, eventos por tipo, partidas por día |
-| `GET` | `/api/export.csv` | Exporta todas las partidas a CSV |
-| `POST` | `/api/limpiar` | Vacía la base de datos (para pruebas) |
+&#x20; - main.gd (Ciclo de juego, combos e input buffering)
 
-Prueba rápida sin abrir el juego:
+&#x20; - vfx.gd (Screenshake, partículas y textos flotantes)
 
-```bash
-curl "http://127.0.0.1:8000/api/estadisticas"
-curl -X POST http://127.0.0.1:8000/api/partidas -H "Content-Type: application/json" ^
-     -d "{\"jugador\":\"Prueba\",\"puntos\":9000,\"nivel\":10,\"racha\":25,\"ladrillos\":90,\"powerups\":6,\"duracion_s\":180,\"modo\":\"normal\"}"
-```
+&#x20; - sfx.gd (Generador procedural de sonido)
 
----
+&#x20; - leaderboard.gd (Cliente HTTP para la base de datos)
 
-## 🖥️ La interfaz web
+&#x20; - skin\_catalog.gd (Configuración y catálogo de skins)
 
-Cinco pestañas que se actualizan solas cada 5 segundos:
+\- servidor/
 
-1. **🏆 Clasificación** — podio + tabla con el mejor resultado de cada jugador.
-2. **👤 Jugadores** — todo lo acumulado por persona (puntos, ladrillos, coleccionables, tiempo…). Se puede buscar y pinchar para ver su ficha.
-3. **🕹️ Partidas** — cada partida con duración, vidas, skins y fecha. Filtros + **exportar CSV**.
-4. **📋 Actividad** — el registro de eventos, filtrable por jugador y tipo.
-5. **📊 Estadísticas** — tarjetas de totales, gráficos de barras (partidas por día, eventos por tipo) y rendimiento por nivel.
+&#x20; - servidor.py (API REST + SQLite + servidor web local)
 
----
+&#x20; - ranking.db (Base de datos SQLite)
 
-## 🔒 Notas de diseño
+&#x20; - web/ (Archivos del tablero web: HTML, CSS y JS)
 
-- **Validación en el servidor:** el juego no es de fiar (cualquiera puede modificarlo), así que el servidor recorta y valida todo: nombre de 16 caracteres máximo, puntos dentro de rango, tipos de evento permitidos, modo `normal`/`infinito`…
-- **Sin inyección de HTML:** la web pinta los nombres con `textContent`, nunca `innerHTML`.
-- **Sin pantallas bloqueadas:** si el servidor no responde, las peticiones tienen *timeout* de 5 segundos, el juego sigue y los envíos se reintentan después.
-- **Sin librerías externas:** ni en Python (solo la librería estándar) ni en la web (nada de CDN).
 
-> ⚠️ Al ser un sistema **local**, la clasificación no es a prueba de trampas: quien
-> quiera podría enviar una puntuación falsa con `curl`. Para una práctica local es
-> aceptable; blindarlo requeriría validar la partida en el servidor o firmar los
-> resultados.
 
----
+\---
 
-## 📦 Subir a GitHub (entrega)
 
-```bash
-git init
-git add .
-git commit -m "Práctica 4: Breakout Neon con base de datos, leaderboard y panel web"
-git branch -M main
-git remote add origin https://github.com/TU-USUARIO/breakout-neon-practica4.git
-git push -u origin main
-```
 
-Antes de entregar, juega **un par de partidas** con el servidor encendido para que
-`servidor/ranking.db` tenga datos y el profesor los vea al instante en la web.
+\## 🗄️ Base de datos
 
-El archivo `.gitignore` ya excluye la carpeta `.godot/` (caché del editor) y los
-`.exe` exportados, que no hacen falta en el repositorio.
+
+
+Dos tablas en ranking.db:
+
+
+
+\- \*\*partidas\*\*: Almacena jugador, puntos, nivel, racha, ladrillos, powerups, vidas, modo, duracion\_s, skin\_bola, skin\_pala, sesion, fecha.
+
+\- \*\*eventos\*\*: Bitácora de acciones con tipo, detalle, valor, nivel.
+
