@@ -1,0 +1,11 @@
+{
+  "cambios": [
+    [
+      5,
+      "Nayeli",
+      19880
+    ]
+  ],
+  "accion": "Solo puntos a cero; otros datos conservados",
+  "respaldo": "ranking_antes_reset_nayeli.db"
+}

@@ -85,6 +85,11 @@ var shield_node: StaticBody2D = null
 var _wood_save_available: bool = true
 var _run_banked: bool = false
 
+var _mapa_tiempo: float = 0.0
+var _mapa_muestra: float = 0.0
+var _mapa_abierto: bool = false
+var _mapa_prueba: bool = false
+
 var _inicio_partida: int = 0
 var _powerups_recogidos: int = 0
 var _partida_terminada: bool = false
@@ -94,6 +99,7 @@ var _mensaje_final: String = ""
 
 func _ready() -> void:
 	randomize()
+	Leaderboard.iniciar_sesion()
 	bricks.add_to_group("bricks")
 	endless = GameData.endless
 	run_seed = randi() if endless else 0
@@ -125,6 +131,19 @@ func _on_paddle_hit() -> void:
 
 
 func _process(delta: float) -> void:
+	if state == State.PLAYING and _mapa_abierto:
+		_mapa_tiempo += delta
+		_mapa_muestra += delta
+		if _mapa_muestra >= 0.5:
+			_mapa_muestra = 0.0
+			var posiciones: Array = []
+			for b in active_balls:
+				if is_instance_valid(b):
+					posiciones.append([snappedf(b.position.x, 0.1), snappedf(b.position.y, 0.1)])
+			Leaderboard.registrar_mapa({"clase": "muestra", "nivel": level_index + 1,
+				"intento": level_token, "t": snappedf(_mapa_tiempo, 0.01),
+				"pala": paddle.position.x, "pala_y": paddle.position.y, "ancho": paddle.current_width,
+				"bolas": posiciones.slice(0, 8), "prueba": _mapa_prueba})
 	if _launch_buffer_timer > 0.0:
 		_launch_buffer_timer -= delta
 		if state == State.READY:
@@ -167,6 +186,9 @@ func _unhandled_input(event: InputEvent) -> void:
 			_launch_buffer_timer = INPUT_BUFFER_TIME
 
 	if OS.is_debug_build() and event is InputEventKey and event.pressed and not event.echo:
+		if event.keycode >= KEY_0 and event.keycode <= KEY_9:
+			_mapa_prueba = true
+			Leaderboard.registrar_evento("habilidad_debug", "teclado", 1, level_index + 1)
 		match event.keycode:
 			KEY_1: activate_power_up(PowerUp.Type.MULTI_BALL)
 			KEY_2: activate_power_up(PowerUp.Type.FIRE)
@@ -217,6 +239,13 @@ func _start_level(index: int) -> void:
 	if endless:
 		seed_value = GameData.seed_for(level_num, run_seed + level_num * 977)
 	var layout: Array = LevelGen.layout_for(level_num, seed_value)
+	_mapa_tiempo = 0.0
+	_mapa_muestra = 0.0
+	_mapa_abierto = true
+	Leaderboard.registrar_evento("nivel_iniciado", LevelGen.theme_name(level_num), 0, level_num)
+	Leaderboard.registrar_mapa({"clase": "inicio", "nivel": level_num, "intento": level_token,
+		"modo": "infinito" if endless else "normal", "layout": layout,
+		"tema": LevelGen.theme_name(level_num), "semilla": seed_value, "prueba": _mapa_prueba})
 	arena.self_modulate = LevelGen.theme_color(level_num, seed_value).lerp(Color.WHITE, 0.35)
 
 	for row: int in range(layout.size()):
@@ -269,6 +298,7 @@ func _advance_level() -> void:
 		if is_instance_valid(b):
 			b.running = false
 	var level_num: int = level_index + 1
+	_cerrar_mapa("victoria")
 	GameData.mark_level_cleared(level_num)
 	Leaderboard.registrar_evento("nivel_superado", LevelGen.theme_name(level_num), level_num, level_num)
 	if not endless and level_num >= GameData.TOTAL_LEVELS:
@@ -607,6 +637,8 @@ func _toggle_pause() -> void:
 
 
 func _restart_game() -> void:
+	_cerrar_mapa("reinicio")
+	Leaderboard.enviar_eventos()
 	if state == State.GAME_OVER or state == State.WON:
 		_go_to_menu()
 		return
@@ -615,6 +647,8 @@ func _restart_game() -> void:
 		pause_panel.visible = false
 		paddle.frozen = false
 	_bank_run()
+	Leaderboard.iniciar_sesion()
+	_mapa_prueba = false
 	_run_banked = false
 	score = 0
 	lives = START_LIVES
@@ -689,6 +723,7 @@ func _resume() -> void:
 
 
 func _go_to_menu() -> void:
+	_cerrar_mapa("salida")
 	_bank_run()
 	_enviar_partida_si_pendiente()
 	Leaderboard.enviar_eventos()
@@ -710,6 +745,7 @@ func _style_name_panel() -> void:
 
 
 func _terminar_partida(titulo: String, evento: String) -> void:
+	_cerrar_mapa("derrota" if evento == "juego_terminado" else "victoria")
 	_partida_terminada = true
 	Leaderboard.registrar_evento(evento, "", score, level_index + 1)
 	Leaderboard.enviar_eventos()
@@ -785,3 +821,18 @@ func _on_partida_guardada(ok: bool, puesto: int, mensaje: String) -> void:
 		_mostrar_mensaje_final("¡PUESTO #%d EN LA CLASIFICACIÓN!" % puesto)
 	else:
 		_mostrar_mensaje_final("(%s)" % mensaje)
+
+
+func _cerrar_mapa(resultado: String) -> void:
+	if not _mapa_abierto:
+		return
+	_mapa_abierto = false
+	Leaderboard.registrar_mapa({"clase": "fin", "nivel": level_index + 1,
+		"intento": level_token, "t": snappedf(_mapa_tiempo, 0.01),
+		"resultado": resultado, "prueba": _mapa_prueba})
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_CLOSE_REQUEST:
+		_cerrar_mapa("salida")
+		Leaderboard.enviar_eventos()

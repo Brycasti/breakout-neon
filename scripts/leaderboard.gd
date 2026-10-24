@@ -65,7 +65,8 @@ func _notification(que: int) -> void:
 func enviar_partida(datos: Dictionary) -> void:
 	if not datos.has("jugador"):
 		datos["jugador"] = nombre_jugador()
-	datos["sesion"] = sesion
+	if not datos.has("sesion"):
+		datos["sesion"] = sesion
 	var cuerpo: String = JSON.stringify(datos)
 
 	var http: HTTPRequest = _crear_peticion()
@@ -226,3 +227,14 @@ func _escribir_pendientes() -> void:
 		return
 	archivo.store_string(JSON.stringify(_pendientes))
 	archivo.close()
+
+func iniciar_sesion() -> void:
+	enviar_eventos()
+	sesion = "%d-%d-%d" % [int(Time.get_unix_time_from_system()), Time.get_ticks_msec(), randi() % 100000]
+
+
+func registrar_mapa(datos: Dictionary) -> void:
+	_eventos.append({"jugador": nombre_jugador(), "tipo": "telemetria",
+		"nivel": datos.get("nivel", 1), "sesion": sesion, "payload": datos})
+	if _eventos.size() >= MAX_LOTE:
+		enviar_eventos()

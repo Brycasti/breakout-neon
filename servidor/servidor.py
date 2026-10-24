@@ -40,7 +40,7 @@ MAX_PUNTOS = 10_000_000
 TIPOS_EVENTO = {
     "nivel_iniciado", "nivel_superado", "powerup", "brick_especial",
     "bola_perdida", "multibola", "escudo", "pausa", "juego_terminado",
-    "juego_completado", "skin_equipada",
+    "juego_completado", "skin_equipada", "telemetria", "habilidad_debug",
 }
 
 SQL_TABLAS = """
@@ -86,6 +86,9 @@ def abrir_bd():
     con = sqlite3.connect(RUTA_BD, timeout=10)
     con.row_factory = sqlite3.Row
     con.executescript(SQL_TABLAS)
+    if "payload" not in {r[1] for r in con.execute("PRAGMA table_info(eventos)")}:
+        con.execute("ALTER TABLE eventos ADD COLUMN payload TEXT NOT NULL DEFAULT '{}'")
+        con.commit()
     return con
 
 
@@ -158,7 +161,7 @@ def guardar_partida(datos):
     actividades_atribuidas = 0
     if sesion and jugador != "Anónimo":
         cambio = con.execute(
-            "UPDATE eventos SET jugador = ? WHERE sesion = ? AND jugador = 'Anónimo'",
+            "UPDATE eventos SET jugador = ? WHERE sesion = ? AND (jugador = 'Anónimo' OR tipo = 'telemetria')",
             (jugador, sesion),
         )
         actividades_atribuidas = max(0, cambio.rowcount)
@@ -199,8 +202,8 @@ def guardar_eventos(lista, jugador_por_defecto="Anónimo"):
         if tipo not in TIPOS_EVENTO:
             continue  # se ignora cualquier tipo desconocido
         con.execute(
-            """INSERT INTO eventos (jugador, tipo, detalle, valor, nivel, sesion)
-               VALUES (?,?,?,?,?,?)""",
+            """INSERT INTO eventos (jugador, tipo, detalle, valor, nivel, sesion, payload)
+               VALUES (?,?,?,?,?,?,?)""",
             (
                 limpiar_nombre(ev.get("jugador", jugador_por_defecto)),
                 tipo,
@@ -208,6 +211,7 @@ def guardar_eventos(lista, jugador_por_defecto="Anónimo"):
                 entero(ev.get("valor"), -99999, 99999),
                 entero(ev.get("nivel"), 0, 999),
                 recortar(ev.get("sesion", ""), 40),
+                json.dumps(ev.get("payload", {}) if isinstance(ev.get("payload", {}), dict) else {}, ensure_ascii=False)[:50000],
             ),
         )
         guardados += 1
@@ -348,6 +352,54 @@ def consultar_estadisticas():
     }
 
 
+def consultar_analitica(modo="normal", jugador="", pruebas=False):
+    con = abrir_bd()
+    filas = con.execute("SELECT * FROM eventos WHERE tipo = 'telemetria' ORDER BY id").fetchall()
+    intentos = {}
+    for e in filas:
+        try:
+            d = json.loads(e["payload"])
+            key = (e["sesion"], int(d.get("intento", 0)))
+            if d.get("clase") == "inicio":
+                intentos[key] = dict(d, sesion=e["sesion"], jugador=e["jugador"], fecha=e["fecha"], muestras=[], resultado="sin_cierre", tiempo=0)
+            elif key in intentos:
+                a = intentos[key]
+                a["prueba"] = a.get("prueba", False) or bool(d.get("prueba"))
+                a["tiempo"] = max(a["tiempo"], decimal(d.get("t"), 0, 86400))
+                if d.get("clase") == "muestra":
+                    a["muestras"].append(d)
+                elif d.get("clase") == "fin":
+                    a["resultado"] = d.get("resultado", "sin_cierre")
+        except (ValueError, TypeError):
+            continue
+    seleccion = [a for a in intentos.values() if a.get("modo") == modo and jugador.casefold() in a["jugador"].casefold() and (pruebas or not a.get("prueba"))]
+    niveles = {}
+    for a in seleccion:
+        n = int(a["nivel"])
+        b = niveles.setdefault(n, dict(nivel=n, tema=a.get("tema", ""), intentos=0, victorias=0, derrotas=0, salidas=0, sin_cierre=0, tiempo=0, perdidas=0, habilidades=0))
+        b["intentos"] += 1
+        b["tiempo"] += a["tiempo"]
+        b["victorias"] += a["resultado"] == "victoria"
+        b["derrotas"] += a["resultado"] == "derrota"
+        b["salidas"] += a["resultado"] in ("salida", "reinicio")
+        b["sin_cierre"] += a["resultado"] == "sin_cierre"
+        # Session + level identify event counters; currently each level is visited once per run.
+        contadores = con.execute("SELECT tipo, COUNT(*) AS n FROM eventos WHERE sesion=? AND nivel=? GROUP BY tipo", (a["sesion"], n)).fetchall()
+        for c in contadores:
+            if c["tipo"] == "bola_perdida": b["perdidas"] += c["n"]
+            if c["tipo"] == "powerup": b["habilidades"] += c["n"]
+    con.close()
+    jugadores = {}
+    for a in seleccion:
+        jugadores.setdefault(a["jugador"], set()).add(a["sesion"])
+    recurrentes = sum(len(s) > 1 for nombre, s in jugadores.items() if nombre != "Anónimo")
+    identificados = sum(nombre != "Anónimo" for nombre in jugadores)
+    return {"niveles": sorted(niveles.values(), key=lambda n: n["nivel"]),
+            "intentos": [{**a, "muestras": a["muestras"][::max(1, len(a["muestras"]) // 2000)]} for a in seleccion[-100:]],
+            "total_intentos": len(seleccion), "jugadores": len(jugadores), "recurrentes": recurrentes,
+            "identificados": identificados, "sesiones": len({a["sesion"] for a in seleccion})}
+
+
 def exportar_csv():
     con = abrir_bd()
     filas = con.execute("SELECT * FROM partidas ORDER BY id DESC").fetchall()
@@ -480,6 +532,9 @@ class Manejador(BaseHTTPRequestHandler):
             if ruta.startswith("/api/jugadores/"):
                 nombre = urllib.parse.unquote(ruta[len("/api/jugadores/"):])
                 return self.responder_json(consultar_jugador(limpiar_nombre(nombre)))
+
+            if ruta == "/api/analitica":
+                return self.responder_json(consultar_analitica(arg("modo", "normal"), arg("jugador"), arg("pruebas") == "1"))
 
             if ruta == "/api/estadisticas":
                 return self.responder_json(consultar_estadisticas())
