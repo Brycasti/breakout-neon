@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BREAKOUT NEON · Panel de datos</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+
+<header class="cabecera">
+	<div class="logo">
+		<h1>BREAKOUT <span>NEON</span></h1>
+		<p>Panel de consulta · Práctica 4 · Conexión a una base de datos</p>
+	</div>
+	<div class="panel-estado">
+		<span id="punto-estado" class="punto"></span>
+		<span id="texto-estado">conectando…</span>
+		<button id="boton-actualizar" class="boton-mini">↻ Actualizar</button>
+		<span id="hora-actualizacion" class="hora"></span>
+	</div>
+</header>
+
+<nav class="pestanas">
+	<button class="pestana activa" data-vista="ranking">🏆 Clasificación</button>
+	<button class="pestana" data-vista="jugadores">👤 Jugadores</button>
+	<button class="pestana" data-vista="partidas">🕹️ Partidas</button>
+	<button class="pestana" data-vista="eventos">📋 Actividad</button>
+	<button class="pestana" data-vista="estadisticas">📊 Estadísticas</button>
+</nav>
+
+<main>
+
+	<!-- ============ CLASIFICACIÓN ============ -->
+	<section id="vista-ranking" class="vista activa">
+		<div class="barra">
+			<h2>🏆 Clasificación</h2>
+			<div class="controles">
+				<select id="ranking-modo">
+					<option value="">Todos los modos</option>
+					<option value="normal">Nivel a nivel</option>
+					<option value="infinito">Modo infinito</option>
+				</select>
+				<select id="ranking-limite">
+					<option value="10">Top 10</option>
+					<option value="25">Top 25</option>
+					<option value="50">Top 50</option>
+				</select>
+			</div>
+		</div>
+		<p class="nota">Mejor puntuación de cada jugador. Pulsa una fila para ver su ficha completa.</p>
+		<div id="podio" class="podio"></div>
+		<div class="tabla-envoltura">
+			<table id="tabla-ranking">
+				<thead>
+					<tr><th>#</th><th>Jugador</th><th>Mejor puntuación</th><th>Nivel</th>
+						<th>Racha</th><th>Partidas</th><th>Media</th><th>Última</th></tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</div>
+	</section>
+
+	<!-- ============ JUGADORES ============ -->
+	<section id="vista-jugadores" class="vista">
+		<div class="barra">
+			<h2>👤 Jugadores</h2>
+			<div class="controles">
+				<input id="buscar-jugador" type="search" placeholder="Buscar jugador…">
+			</div>
+		</div>
+		<p class="nota">Todo lo acumulado por cada jugador: partidas, puntos, ladrillos, coleccionables (power-ups) y tiempo de juego.</p>
+		<div class="tabla-envoltura">
+			<table id="tabla-jugadores">
+				<thead>
+					<tr><th>Jugador</th><th>Récord</th><th>Nivel</th><th>Racha</th><th>Partidas</th>
+						<th>Ladrillos</th><th>Coleccionables</th><th>Tiempo</th><th>Eventos</th><th>Última</th></tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</div>
+	</section>
+
+	<!-- ============ PARTIDAS ============ -->
+	<section id="vista-partidas" class="vista">
+		<div class="barra">
+			<h2>🕹️ Partidas guardadas</h2>
+			<div class="controles">
+				<input id="buscar-partida" type="search" placeholder="Filtrar por jugador…">
+				<select id="partidas-modo">
+					<option value="">Todos los modos</option>
+					<option value="normal">Normal</option>
+					<option value="infinito">Infinito</option>
+				</select>
+				<a class="boton-mini" href="/api/export.csv" download="partidas.csv">⬇ Exportar CSV</a>
+			</div>
+		</div>
+		<p class="nota">Cada partida terminada, con su duración, vidas, ladrillos, coleccionables y skins usadas.</p>
+		<div class="tabla-envoltura">
+			<table id="tabla-partidas">
+				<thead>
+					<tr><th>#</th><th>Jugador</th><th>Puntos</th><th>Nivel</th><th>Modo</th>
+						<th>Duración</th><th>Vidas</th><th>Ladrillos</th><th>Coleccionables</th>
+						<th>Bola</th><th>Pala</th><th>Fecha</th></tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</div>
+	</section>
+
+	<!-- ============ ACTIVIDAD ============ -->
+	<section id="vista-eventos" class="vista">
+		<div class="barra">
+			<h2>📋 Actividad del jugador</h2>
+			<div class="controles">
+				<input id="buscar-evento" type="search" placeholder="Filtrar por jugador…">
+				<select id="eventos-tipo">
+					<option value="">Todos los eventos</option>
+					<option value="nivel_iniciado">nivel_iniciado</option>
+					<option value="nivel_superado">nivel_superado</option>
+					<option value="powerup">powerup</option>
+					<option value="brick_especial">brick_especial</option>
+					<option value="bola_perdida">bola_perdida</option>
+					<option value="multibola">multibola</option>
+					<option value="escudo">escudo</option>
+					<option value="pausa">pausa</option>
+					<option value="juego_terminado">juego_terminado</option>
+					<option value="juego_completado">juego_completado</option>
+				</select>
+			</div>
+		</div>
+		<p class="nota">Registro detallado: cada power-up recogido, cada ladrillo especial roto, cada bola perdida…</p>
+		<div class="tabla-envoltura">
+			<table id="tabla-eventos">
+				<thead>
+					<tr><th>#</th><th>Jugador</th><th>Evento</th><th>Detalle</th><th>Valor</th><th>Nivel</th><th>Fecha</th></tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</div>
+	</section>
+
+	<!-- ============ ESTADÍSTICAS ============ -->
+	<section id="vista-estadisticas" class="vista">
+		<div class="barra"><h2>📊 Estadísticas globales</h2></div>
+		<div id="tarjetas-estadisticas" class="tarjetas"></div>
+		<div class="dos-columnas">
+			<div class="caja">
+				<h3>Partidas por día</h3>
+				<div id="grafico-dias" class="grafico"></div>
+			</div>
+			<div class="caja">
+				<h3>Eventos por tipo</h3>
+				<div id="grafico-eventos" class="grafico"></div>
+			</div>
+		</div>
+		<div class="caja">
+			<h3>Rendimiento por nivel alcanzado</h3>
+			<div class="tabla-envoltura">
+				<table id="tabla-niveles">
+					<thead><tr><th>Nivel</th><th>Partidas que lo alcanzaron</th><th>Mejor puntuación</th></tr></thead>
+					<tbody></tbody>
+				</table>
+			</div>
+		</div>
+	</section>
+
+	<!-- ============ FICHA DE JUGADOR ============ -->
+	<section id="detalle-jugador" class="vista oculto">
+		<div class="barra">
+			<h2 id="detalle-titulo">Jugador</h2>
+			<div class="controles"><button id="cerrar-detalle" class="boton-mini">✕ Cerrar</button></div>
+		</div>
+		<div id="detalle-resumen" class="tarjetas"></div>
+		<div class="dos-columnas">
+			<div class="caja">
+				<h3>Últimas partidas</h3>
+				<div class="tabla-envoltura">
+					<table id="detalle-partidas">
+						<thead><tr><th>Puntos</th><th>Nivel</th><th>Modo</th><th>Duración</th><th>Fecha</th></tr></thead>
+						<tbody></tbody>
+					</table>
+				</div>
+			</div>
+			<div class="caja">
+				<h3>Lo que más hizo</h3>
+				<div class="tabla-envoltura">
+					<table id="detalle-eventos">
+						<thead><tr><th>Evento</th><th>Veces</th></tr></thead>
+						<tbody></tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</section>
+
+</main>
+
+<footer class="pie">
+	<p>Base de datos SQLite · servida por <code>servidor/servidor.py</code> ·
+		API disponible en <code>/api/ranking</code>, <code>/api/partidas</code>,
+		<code>/api/eventos</code>, <code>/api/jugadores</code>, <code>/api/estadisticas</code></p>
+</footer>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

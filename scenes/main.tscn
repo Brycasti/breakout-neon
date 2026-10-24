@@ -1,0 +1,308 @@
+[gd_scene format=3 uid="uid://cs62j182p7pj4"]
+
+[ext_resource type="Script" uid="uid://dk3qpticjngug" path="res://scripts/main.gd" id="1_main"]
+[ext_resource type="Texture2D" uid="uid://db026r7u776e5" path="res://assets/generated/arena_bg.png" id="2_bg"]
+[ext_resource type="PackedScene" uid="uid://c1b1mu1coso7d" path="res://scenes/paddle.tscn" id="3_paddle"]
+[ext_resource type="PackedScene" uid="uid://6m6n1dvuo0i2" path="res://scenes/ball.tscn" id="4_ball"]
+[ext_resource type="Script" uid="uid://4la7qd0ou1td" path="res://scripts/vfx.gd" id="5_vfx"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_side"]
+size = Vector2(16, 720)
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_top"]
+size = Vector2(1280, 16)
+
+[node name="Main" type="Node2D" unique_id=1153911482]
+script = ExtResource("1_main")
+
+[node name="Arena" type="Sprite2D" parent="." unique_id=900001]
+position = Vector2(640, 360)
+texture = ExtResource("2_bg")
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=900002]
+position = Vector2(640, 360)
+
+[node name="Vfx" type="Node2D" parent="." unique_id=900003]
+script = ExtResource("5_vfx")
+
+[node name="Walls" type="Node2D" parent="." unique_id=718592466]
+
+[node name="LeftWall" type="StaticBody2D" parent="Walls" unique_id=41755769]
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/LeftWall" unique_id=1844041944]
+position = Vector2(8, 360)
+shape = SubResource("RectangleShape2D_side")
+
+[node name="Visual" type="ColorRect" parent="Walls/LeftWall" unique_id=266938998]
+offset_right = 16.0
+offset_bottom = 720.0
+color = Color(0.235, 0.706, 1, 0.35)
+
+[node name="RightWall" type="StaticBody2D" parent="Walls" unique_id=1505464234]
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/RightWall" unique_id=1458591918]
+position = Vector2(1272, 360)
+shape = SubResource("RectangleShape2D_side")
+
+[node name="Visual" type="ColorRect" parent="Walls/RightWall" unique_id=1842970890]
+offset_left = 1264.0
+offset_right = 1280.0
+offset_bottom = 720.0
+color = Color(0.235, 0.706, 1, 0.35)
+
+[node name="TopWall" type="StaticBody2D" parent="Walls" unique_id=1231846350]
+collision_mask = 0
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Walls/TopWall" unique_id=24571159]
+position = Vector2(640, 8)
+shape = SubResource("RectangleShape2D_top")
+
+[node name="Visual" type="ColorRect" parent="Walls/TopWall" unique_id=463756154]
+offset_right = 1280.0
+offset_bottom = 16.0
+color = Color(0.235, 0.706, 1, 0.45)
+
+[node name="Bricks" type="Node2D" parent="." unique_id=217042686]
+
+[node name="Paddle" parent="." unique_id=1641564060 instance=ExtResource("3_paddle")]
+position = Vector2(640, 660)
+
+[node name="Ball" parent="." unique_id=66027141 instance=ExtResource("4_ball")]
+position = Vector2(640, 632)
+
+[node name="HUD" type="CanvasLayer" parent="." unique_id=700756756]
+
+[node name="ScoreLabel" type="Label" parent="HUD" unique_id=1037369423]
+offset_left = 32.0
+offset_top = 20.0
+offset_right = 412.0
+offset_bottom = 60.0
+theme_override_colors/font_color = Color(0.545, 0.902, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.7)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 30
+text = "PUNTOS  0"
+
+[node name="LevelLabel" type="Label" parent="HUD" unique_id=1679041708]
+offset_left = 520.0
+offset_top = 20.0
+offset_right = 760.0
+offset_bottom = 60.0
+theme_override_colors/font_color = Color(1, 0.878, 0.4, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.7)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 30
+text = "NIVEL  1 / 4"
+horizontal_alignment = 1
+
+[node name="LivesLabel" type="Label" parent="HUD" unique_id=199501308]
+offset_left = 868.0
+offset_top = 20.0
+offset_right = 1248.0
+offset_bottom = 60.0
+theme_override_colors/font_color = Color(0.42, 0.945, 0.471, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.7)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 30
+text = "VIDAS  3"
+horizontal_alignment = 2
+
+[node name="MessageLabel" type="Label" parent="HUD" unique_id=149656381]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -460.0
+offset_top = -160.0
+offset_right = 460.0
+offset_bottom = 160.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0.02, 0.06, 0.16, 1)
+theme_override_constants/line_spacing = 12
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 46
+text = "¡PULSA ESPACIO PARA LANZAR!"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="ComboLabel" type="Label" parent="HUD" unique_id=900004]
+offset_left = 32.0
+offset_top = 64.0
+offset_right = 520.0
+offset_bottom = 100.0
+theme_override_colors/font_color = Color(1, 0.92, 0.45, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.7)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 22
+
+[node name="PowerLabel" type="Label" parent="HUD" unique_id=900005]
+offset_left = 420.0
+offset_top = 64.0
+offset_right = 860.0
+offset_bottom = 100.0
+theme_override_colors/font_color = Color(0.65, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.7)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 22
+horizontal_alignment = 1
+
+[node name="ShieldLabel" type="Label" parent="HUD" unique_id=900006]
+offset_left = 848.0
+offset_top = 64.0
+offset_right = 1248.0
+offset_bottom = 100.0
+theme_override_colors/font_color = Color(0.4, 0.9, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.7)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 22
+horizontal_alignment = 2
+
+[node name="PausePanel" type="Control" parent="HUD" unique_id=900007]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Dim" type="ColorRect" parent="HUD/PausePanel" unique_id=900008]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.02, 0.04, 0.1, 0.72)
+
+[node name="Box" type="VBoxContainer" parent="HUD/PausePanel" unique_id=900009]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -220.0
+offset_top = 24.0
+offset_right = 220.0
+offset_bottom = 214.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 22
+
+[node name="ResumeButton" type="Button" parent="HUD/PausePanel/Box" unique_id=900010]
+custom_minimum_size = Vector2(440, 66)
+theme_override_font_sizes/font_size = 30
+text = "CONTINUAR"
+
+[node name="MenuButton" type="Button" parent="HUD/PausePanel/Box" unique_id=900011]
+custom_minimum_size = Vector2(440, 66)
+theme_override_font_sizes/font_size = 30
+text = "VOLVER AL MENÚ"
+
+[node name="PauseLabel" type="Label" parent="HUD" unique_id=1414763963]
+visible = false
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -300.0
+offset_top = -200.0
+offset_right = 300.0
+offset_bottom = -110.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
+theme_override_colors/font_outline_color = Color(0.02, 0.06, 0.16, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 56
+text = "PAUSA"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="NamePanel" type="Control" parent="HUD" unique_id=900020]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Dim" type="ColorRect" parent="HUD/NamePanel" unique_id=900021]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.02, 0.04, 0.1, 0.85)
+
+[node name="Box" type="VBoxContainer" parent="HUD/NamePanel" unique_id=900022]
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -280.0
+offset_top = -212.0
+offset_right = 280.0
+offset_bottom = 212.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 16
+
+[node name="Title" type="Label" parent="HUD/NamePanel/Box" unique_id=900023]
+theme_override_colors/font_color = Color(0.4, 0.9, 1, 1)
+theme_override_colors/font_outline_color = Color(0.02, 0.06, 0.16, 1)
+theme_override_constants/outline_size = 6
+theme_override_font_sizes/font_size = 36
+text = "PARTIDA TERMINADA"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="HUD/NamePanel/Box" unique_id=900024]
+theme_override_colors/font_color = Color(0.6, 0.78, 1, 1)
+theme_override_font_sizes/font_size = 20
+text = "¿Cómo te llamas? Así aparecerás en la clasificación"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="PointsLabel" type="Label" parent="HUD/NamePanel/Box" unique_id=900025]
+theme_override_colors/font_color = Color(1, 0.84, 0.3, 1)
+theme_override_font_sizes/font_size = 26
+text = "PUNTOS: 0"
+horizontal_alignment = 1
+
+[node name="NameEdit" type="LineEdit" parent="HUD/NamePanel/Box" unique_id=900026]
+custom_minimum_size = Vector2(560, 64)
+theme_override_font_sizes/font_size = 28
+max_length = 16
+placeholder_text = "Escribe tu nombre"
+alignment = 1
+
+[node name="SendButton" type="Button" parent="HUD/NamePanel/Box" unique_id=900027]
+custom_minimum_size = Vector2(560, 62)
+theme_override_font_sizes/font_size = 26
+text = "GUARDAR EN LA CLASIFICACIÓN"
+
+[node name="SkipButton" type="Button" parent="HUD/NamePanel/Box" unique_id=900028]
+custom_minimum_size = Vector2(560, 54)
+theme_override_font_sizes/font_size = 22
+text = "OMITIR"
+
+[node name="HintLabel" type="Label" parent="HUD/NamePanel/Box" unique_id=900029]
+theme_override_colors/font_color = Color(0.5, 0.62, 0.8, 1)
+theme_override_font_sizes/font_size = 15
+text = "El nombre se recuerda para la próxima partida"
+horizontal_alignment = 1

@@ -1,0 +1,432 @@
+[gd_scene load_steps=4 format=3]
+
+[ext_resource type="Script" path="res://scripts/menu.gd" id="1_menu"]
+[ext_resource type="Texture2D" path="res://assets/generated/menu_hero.png" id="2_hero"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+content_margin_left = 18.0
+content_margin_top = 14.0
+content_margin_right = 18.0
+content_margin_bottom = 14.0
+bg_color = Color(0.039, 0.063, 0.145, 0.82)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.35, 0.86, 1, 0.55)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[node name="Menu" type="Control"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_menu")
+
+[node name="Bg" type="TextureRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_hero")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Tint" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.02, 0.03, 0.1, 0.5)
+
+[node name="Home" type="Control" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="TitleBox" type="VBoxContainer" parent="Home"]
+offset_left = 64.0
+offset_top = 44.0
+offset_right = 780.0
+offset_bottom = 200.0
+theme_override_constants/separation = 0
+
+[node name="Title" type="Label" parent="Home/TitleBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.94, 1, 1)
+theme_override_colors/font_outline_color = Color(0.02, 0.05, 0.14, 1)
+theme_override_constants/outline_size = 12
+theme_override_font_sizes/font_size = 92
+text = "BREAKOUT NEON"
+
+[node name="Subtitle" type="Label" parent="Home/TitleBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.78, 0.88, 1, 1)
+theme_override_font_sizes/font_size = 24
+text = "Rebota, rompe y desbloquea estilos"
+
+[node name="PlayButton" type="Button" parent="Home"]
+offset_left = 64.0
+offset_top = 206.0
+offset_right = 424.0
+offset_bottom = 266.0
+text = "JUGAR"
+
+[node name="EndlessButton" type="Button" parent="Home"]
+offset_left = 64.0
+offset_top = 274.0
+offset_right = 424.0
+offset_bottom = 326.0
+text = "MODO INFINITO"
+
+[node name="LevelsButton" type="Button" parent="Home"]
+offset_left = 64.0
+offset_top = 334.0
+offset_right = 424.0
+offset_bottom = 386.0
+text = "NIVELES"
+
+[node name="WardrobeButton" type="Button" parent="Home"]
+offset_left = 64.0
+offset_top = 394.0
+offset_right = 424.0
+offset_bottom = 446.0
+text = "ARMARIO"
+
+[node name="ScoresButton" type="Button" parent="Home"]
+offset_left = 64.0
+offset_top = 454.0
+offset_right = 424.0
+offset_bottom = 506.0
+text = "RÉCORDS"
+
+[node name="InfoPanel" type="PanelContainer" parent="Home"]
+offset_left = 64.0
+offset_top = 516.0
+offset_right = 640.0
+offset_bottom = 656.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="Box" type="VBoxContainer" parent="Home/InfoPanel"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="InfoTitle" type="Label" parent="Home/InfoPanel/Box"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.84, 0.3, 1)
+theme_override_font_sizes/font_size = 22
+text = "TU PROGRESO"
+
+[node name="BestScoreLabel" type="Label" parent="Home/InfoPanel/Box"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.93, 1, 1)
+theme_override_font_sizes/font_size = 19
+text = "MEJOR PUNTUACIÓN:  0"
+
+[node name="TotalPointsLabel" type="Label" parent="Home/InfoPanel/Box"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.93, 1, 1)
+theme_override_font_sizes/font_size = 19
+text = "PUNTOS TOTALES:  0"
+
+[node name="ProgressLabel" type="Label" parent="Home/InfoPanel/Box"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.93, 1, 1)
+theme_override_font_sizes/font_size = 19
+text = "NIVELES SUPERADOS:  0 / 10"
+
+[node name="Showcase" type="PanelContainer" parent="Home"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -430.0
+offset_top = 214.0
+offset_right = -64.0
+offset_bottom = 656.0
+grow_horizontal = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="Box" type="VBoxContainer" parent="Home/Showcase"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="ShowcaseTitle" type="Label" parent="Home/Showcase/Box"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.84, 0.3, 1)
+theme_override_font_sizes/font_size = 22
+text = "TU EQUIPO"
+horizontal_alignment = 1
+
+[node name="BallPreview" type="TextureRect" parent="Home/Showcase/Box"]
+custom_minimum_size = Vector2(140, 150)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="PaddlePreview" type="TextureRect" parent="Home/Showcase/Box"]
+custom_minimum_size = Vector2(260, 70)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="SkinNamesLabel" type="Label" parent="Home/Showcase/Box"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.93, 1, 1)
+theme_override_font_sizes/font_size = 19
+text = "Orbe de Plasma  +  Barra Neón"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="HintLabel" type="Label" parent="Home"]
+anchors_preset = 12
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -44.0
+offset_bottom = -14.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_colors/font_color = Color(0.7, 0.8, 0.95, 1)
+theme_override_font_sizes/font_size = 18
+text = "Flechas / A-D o el ratón para mover"
+horizontal_alignment = 1
+
+[node name="Levels" type="Control" parent="."]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Header" type="Label" parent="Levels"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 30.0
+offset_bottom = 82.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.6, 0.94, 1, 1)
+theme_override_colors/font_outline_color = Color(0.02, 0.05, 0.14, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 44
+text = "SELECCIONA UN NIVEL"
+horizontal_alignment = 1
+
+[node name="LevelGrid" type="GridContainer" parent="Levels"]
+offset_left = 76.0
+offset_top = 130.0
+offset_right = 800.0
+offset_bottom = 470.0
+theme_override_constants/h_separation = 12
+theme_override_constants/v_separation = 12
+columns = 5
+
+[node name="PreviewPanel" type="PanelContainer" parent="Levels"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -452.0
+offset_top = 130.0
+offset_right = -60.0
+offset_bottom = 470.0
+grow_horizontal = 0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="Box" type="VBoxContainer" parent="Levels/PreviewPanel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="PreviewTitle" type="Label" parent="Levels/PreviewPanel/Box"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.84, 0.3, 1)
+theme_override_font_sizes/font_size = 22
+text = "VISTA PREVIA"
+
+[node name="LayoutPreview" type="GridContainer" parent="Levels/PreviewPanel/Box"]
+layout_mode = 2
+theme_override_constants/h_separation = 1
+theme_override_constants/v_separation = 1
+columns = 16
+
+[node name="PreviewInfoLabel" type="Label" parent="Levels/PreviewPanel/Box"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.93, 1, 1)
+theme_override_font_sizes/font_size = 18
+text = "Nivel 1"
+autowrap_mode = 2
+
+[node name="PlayButton" type="Button" parent="Levels"]
+offset_left = 76.0
+offset_top = 506.0
+offset_right = 376.0
+offset_bottom = 566.0
+text = "JUGAR NIVEL 1"
+
+[node name="BackButton" type="Button" parent="Levels"]
+offset_left = 396.0
+offset_top = 506.0
+offset_right = 596.0
+offset_bottom = 566.0
+text = "VOLVER"
+
+[node name="Wardrobe" type="Control" parent="."]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Header" type="Label" parent="Wardrobe"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 26.0
+offset_bottom = 78.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.85, 0.6, 1, 1)
+theme_override_colors/font_outline_color = Color(0.02, 0.05, 0.14, 1)
+theme_override_constants/outline_size = 8
+theme_override_font_sizes/font_size = 44
+text = "ARMARIO"
+horizontal_alignment = 1
+
+[node name="PointsLabel" type="Label" parent="Wardrobe"]
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -520.0
+offset_top = 108.0
+offset_right = -60.0
+offset_bottom = 144.0
+grow_horizontal = 0
+theme_override_colors/font_color = Color(1, 0.84, 0.3, 1)
+theme_override_font_sizes/font_size = 22
+text = "PUNTOS TOTALES:  0"
+horizontal_alignment = 2
+
+[node name="Tabs" type="HBoxContainer" parent="Wardrobe"]
+anchors_preset = 5
+anchor_left = 0.5
+anchor_right = 0.5
+offset_left = -240.0
+offset_top = 108.0
+offset_right = 240.0
+offset_bottom = 162.0
+grow_horizontal = 2
+theme_override_constants/separation = 16
+alignment = 1
+
+[node name="BallsTab" type="Button" parent="Wardrobe/Tabs"]
+custom_minimum_size = Vector2(210, 52)
+layout_mode = 2
+text = "PELOTAS"
+
+[node name="PaddlesTab" type="Button" parent="Wardrobe/Tabs"]
+custom_minimum_size = Vector2(210, 52)
+layout_mode = 2
+text = "PALAS"
+
+[node name="PreviewPanel" type="PanelContainer" parent="Wardrobe"]
+offset_left = 76.0
+offset_top = 176.0
+offset_right = 800.0
+offset_bottom = 428.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="Box" type="HBoxContainer" parent="Wardrobe/PreviewPanel"]
+layout_mode = 2
+theme_override_constants/separation = 18
+
+[node name="BigPreview" type="TextureRect" parent="Wardrobe/PreviewPanel/Box"]
+custom_minimum_size = Vector2(210, 190)
+layout_mode = 2
+expand_mode = 1
+stretch_mode = 5
+
+[node name="Info" type="VBoxContainer" parent="Wardrobe/PreviewPanel/Box"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="PreviewName" type="Label" parent="Wardrobe/PreviewPanel/Box/Info"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.6, 0.94, 1, 1)
+theme_override_font_sizes/font_size = 32
+text = "Orbe de Plasma"
+
+[node name="PreviewDesc" type="Label" parent="Wardrobe/PreviewPanel/Box/Info"]
+layout_mode = 2
+size_flags_vertical = 3
+theme_override_colors/font_color = Color(0.85, 0.93, 1, 1)
+theme_override_font_sizes/font_size = 19
+text = "Energía azul girando sin parar."
+autowrap_mode = 2
+
+[node name="Cards" type="HBoxContainer" parent="Wardrobe"]
+offset_left = 76.0
+offset_top = 442.0
+offset_right = 1204.0
+offset_bottom = 618.0
+theme_override_constants/separation = 10
+alignment = 1
+
+[node name="BackButton" type="Button" parent="Wardrobe"]
+offset_left = 76.0
+offset_top = 640.0
+offset_right = 316.0
+offset_bottom = 698.0
+text = "VOLVER"
+
+[node name="Scores" type="Control" parent="."]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="Header" type="Label" parent="Scores"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 24.0
+offset_bottom = 76.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(1, 0.84, 0.3, 1)
+theme_override_font_sizes/font_size = 44
+text = "CLASIFICACIÓN"
+horizontal_alignment = 1
+
+[node name="StatusLabel" type="Label" parent="Scores"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_top = 82.0
+offset_bottom = 112.0
+grow_horizontal = 2
+theme_override_colors/font_color = Color(0.55, 0.78, 1, 1)
+theme_override_font_sizes/font_size = 20
+text = "Conectando con el servidor…"
+horizontal_alignment = 1
+
+[node name="Panel" type="PanelContainer" parent="Scores"]
+offset_left = 120.0
+offset_top = 122.0
+offset_right = 1160.0
+offset_bottom = 634.0
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="Rows" type="VBoxContainer" parent="Scores/Panel"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="BackButton" type="Button" parent="Scores"]
+offset_left = 480.0
+offset_top = 646.0
+offset_right = 800.0
+offset_bottom = 704.0
+text = "VOLVER"

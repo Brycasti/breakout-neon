@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://c1b1mu1coso7d"]
+
+[ext_resource type="Script" uid="uid://xeatrv7h336t" path="res://scripts/paddle.gd" id="1_paddle"]
+[ext_resource type="Texture2D" uid="uid://dnr58oqr1roo3" path="res://assets/PNG/56-Breakout-Tiles.png" id="2_y7wee"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_paddle"]
+size = Vector2(138, 25)
+
+[node name="Paddle" type="CharacterBody2D" unique_id=542906203]
+collision_layer = 2
+collision_mask = 0
+motion_mode = 1
+script = ExtResource("1_paddle")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=322974637]
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("2_y7wee")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1593553490]
+position = Vector2(0, 0.5)
+shape = SubResource("RectangleShape2D_paddle")

@@ -1,0 +1,18 @@
+[gd_scene format=3 uid="uid://dsc8sxrbk0rk6"]
+
+[ext_resource type="Script" uid="uid://csems5ve1njtu" path="res://scripts/power_up.gd" id="1_ig136"]
+[ext_resource type="Texture2D" uid="uid://b5o5b3tdk5f5l" path="res://assets/PNG/49-Breakout-Tiles.png" id="2_6iuya"]
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_qc20i"]
+size = Vector2(64, 18)
+
+[node name="PowerUp" type="Area2D" unique_id=233425769]
+collision_mask = 3
+script = ExtResource("1_ig136")
+
+[node name="Sprite2D" type="Sprite2D" parent="." unique_id=453914083]
+scale = Vector2(0.125, 0.125)
+texture = ExtResource("2_6iuya")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="." unique_id=1341712689]
+shape = SubResource("RectangleShape2D_qc20i")
